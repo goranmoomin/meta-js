@@ -1,0 +1,13 @@
+{
+    "name": "meta-js",
+    "version": "0.0.1",
+    "description": "MetaJS - Hygenic Macros for JavaScript",
+    "main": "src/index.js",
+    "repository": "https://github.com/pcr910303/meta-js.git",
+    "author": "Sungbin Jo <pcr910303@icloud.com>",
+    "license": "MIT",
+    "dependencies": {
+        "ramda": "^0.26.1",
+        "shift-parser": "^7.0.0"
+    }
+}
