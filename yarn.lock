@@ -17,6 +17,11 @@ shift-ast@6.0.0:
   resolved "https://registry.yarnpkg.com/shift-ast/-/shift-ast-6.0.0.tgz#7af2b102f8f9e856d84b4f299dde1cb5424540cc"
   integrity sha512-XXxDcEBWVBzqWXfNYJlLyJ1/9kMvOXVRXiqPjkOrTCC5qRsBvEMJMRLLFhU3tn8ue56Y7IZyBE6bexFum5QLUw==
 
+shift-ast@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/shift-ast/-/shift-ast-6.0.1.tgz#4fea9fde13bdac113551c2109582d14dab79975e"
+  integrity sha512-dJi8+aG38zH+9gATj3k5mf1O/AG4g86q7svQx3tnQPOg/9pTy41228jYrzEKrDu4Z0tyHjDq/45z2iPTl6EPgA==
+
 shift-parser@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/shift-parser/-/shift-parser-7.0.0.tgz#ea3ca9ea427584cff794ee5a5de4f06dfd24dca7"

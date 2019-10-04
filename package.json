@@ -8,6 +8,7 @@
     "license": "MIT",
     "dependencies": {
         "ramda": "^0.26.1",
+        "shift-ast": "^6.0.1",
         "shift-parser": "^7.0.0"
     }
 }
