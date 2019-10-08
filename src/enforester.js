@@ -59,6 +59,20 @@ class Enforester {
     }
 
     enforestExpression() {
+        let left = this.enforestExpressionLoop();
+
+        while(this.isPunctuator(this.peek(), ",")) {
+            const operator = this.advance();
+            const right = this.enforestExpressionLoop();
+            left = new AST.BinaryExpression({
+                left,
+                operator: operator.token.value,
+                right
+            });
+        }
+
+        this.term = null;
+        return left;
     }
 
     enforestExpressionLoop() {
@@ -264,12 +278,12 @@ class Enforester {
 
     isKeyword(term, value) {
         return term && (term instanceof TokenTerm) && term.isKeyword() &&
-            value ? term.token.value === value : true;
+            (value ? term.token.value === value : true);
     }
 
     isPunctuator(term, value) {
         return term && (term instanceof TokenTerm) && term.isPunctuator() &&
-            value ? term.token.value === value : true;
+            (value ? term.token.value === value : true);
     }
 
     isOperator(term) {
