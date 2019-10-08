@@ -107,6 +107,21 @@ class Enforester {
                 continue;
             }
 
+            // string literals
+            if(this.term === null && this.isStringLiteral(lookahead)) {
+                this.term = this.enforestStringLiteral();
+            }
+
+            // boolean literals
+            if(this.term === null && this.isBooleanLiteral(lookahead)) {
+                this.term = this.enforestBooleanLiteral();
+            }
+
+            // null literals
+            if(this.term === null && this.isNullLiteral(lookahead)) {
+                this.term = this.enforestNullLiteral();
+            }
+
             // prefix unary ops
             if(this.term === null && this.isOperator(lookahead)) {
                 // TODO: check if unary operator
@@ -146,6 +161,25 @@ class Enforester {
         return new AST.LiteralNumericExpression({
             value: term.token.value
         });
+    }
+
+    enforestStringLiteral() {
+        const term = this.advance();
+        return new AST.LiteralStringExpression({
+            value: term.token.str
+        });
+    }
+
+    enforestBooleanLiteral() {
+        const term = this.advance();
+        return new AST.LiteralBooleanExpression({
+            value: term.token.value === "true"
+        });
+    }
+
+    enforestNullLiteral() {
+        this.advance();
+        return new AST.LiteralNullExpression();
     }
 
     pushUnaryOperator() {
