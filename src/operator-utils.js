@@ -4,17 +4,11 @@ const {
     DelimiterTerm
 } = require("./term.js");
 
-const unaryOperators = {
-    "+": true,
-    "-": true,
-    "!": true,
-    "~": true,
-    "++": true,
-    "--": true,
-    "typeof": true,
-    "void": true,
-    "delete": true,
-};
+const unaryOperators = [
+    "+", "-", "!", "~",
+    "++", "--", "typeof",
+    "void", "delete",
+];
 
 const binaryOperatorPrecedence = {
     "*": 13,
@@ -42,6 +36,12 @@ const binaryOperatorPrecedence = {
     "||": 4,
 };
 
+const assignOperators = [
+    "=", "|=", "^=", "&=",
+    "<<=", ">>=", ">>>=",
+    "+=", "-=", "*=", "/=", "%="
+];
+
 const getOperatorPrec = term => {
     if(!isOperator(term)) {
         // TODO: saner error handling
@@ -56,7 +56,7 @@ const isUnaryOperator = term => {
     }
 
     return (term.isPunctuator() || term.isIdentifier() || term.isKeyword()) &&
-        unaryOperators.hasOwnProperty(term.token.value);
+        unaryOperators.includes(term.token.value);
 };
 
 const isBinaryOperator = term => {
@@ -72,9 +72,19 @@ const isOperator = term => {
     return isUnaryOperator(term) || isBinaryOperator(term);
 };
 
+const isAssignOperator = term => {
+    if(!(term instanceof TokenTerm)) {
+        return false;
+    }
+
+    return (term.isPunctuator() || term.isIdentifier() || term.isKeyword()) &&
+        assignOperators.includes(term.token.value);
+};
+
 module.exports = {
     getOperatorPrec,
     isUnaryOperator,
     isBinaryOperator,
-    isOperator
+    isOperator,
+    isAssignOperator
 };
