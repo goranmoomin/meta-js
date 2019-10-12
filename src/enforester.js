@@ -57,6 +57,10 @@ class Enforester {
             return this.enforestWhileStatement();
         }
 
+        if(this.isKeyword(lookahead, "if")) {
+            return this.enforestIfStatement();
+        }
+
         if(this.isPunctuator(lookahead, ";")) {
             return new AST.EmptyStatement();
         }
@@ -77,6 +81,28 @@ class Enforester {
         return new AST.WhileStatement({
             test,
             body
+        });
+    }
+
+    enforestIfStatement() {
+        this.matchKeyword("if");
+        const conndition = this.matchParens();
+        const conditionEnforester = new Enforester(condition);
+        const test = conditionEnforester.enforestExpression();
+        // TODO: saner error handling
+        if(!test) {
+            throw new Error();
+        }
+        const consequent = this.enforestStatement();
+        let alternate = null;
+        if(this.isKeyword(this.peek(), "else")) {
+            this.advance();
+            alternate = this.enforestStatement();
+        }
+        return new AST.IfStatement({
+            test,
+            consequent,
+            alternate
         });
     }
 
