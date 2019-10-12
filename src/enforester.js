@@ -53,11 +53,31 @@ class Enforester {
             return this.enforestBlockStatement();
         }
 
+        if(this.isKeyword(lookahead, "while")) {
+            return this.enforestWhileStatement();
+        }
+
         if(this.isPunctuator(lookahead, ";")) {
             return new AST.EmptyStatement();
         }
 
         return this.enforestExpressionStatement();
+    }
+
+    enforestWhileStatement() {
+        this.matchKeyword("while");
+        const condition = this.matchParens();
+        const conditionEnforester = new Enforester(condition);
+        const test = conditionEnforester.enforestExpression();
+        // TODO: saner error handling
+        if(!test) {
+            throw new Error();
+        }
+        const body = this.enforestStatement();
+        return new AST.WhileStatement({
+            test,
+            body
+        });
     }
 
     enforestExpressionStatement() {
