@@ -110,16 +110,19 @@ class Enforester {
             // string literals
             if(this.term === null && this.isStringLiteral(lookahead)) {
                 this.term = this.enforestStringLiteral();
+                continue;
             }
 
             // boolean literals
             if(this.term === null && this.isBooleanLiteral(lookahead)) {
                 this.term = this.enforestBooleanLiteral();
+                continue;
             }
 
             // null literals
             if(this.term === null && this.isNullLiteral(lookahead)) {
                 this.term = this.enforestNullLiteral();
+                continue;
             }
 
             // prefix unary ops
