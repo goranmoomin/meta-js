@@ -16,44 +16,44 @@ class TokenTerm extends Term {
         return this.token.type.klass === tokenGroup || this.token.type === tokenGroup;
     }
 
-    isIdentifier() {
-        return this.is(TokenClass.Ident);
-    }
-
     isAssign() {
         return this.is(TokenType.ASSIGN);
     }
 
-    isBooleanLiteral() {
-        return this.is(TokenType.TRUE) || this.is(TokenType.FALSE);
-    }
-
-    isKeyword() {
-        return this.is(TokenClass.Keyword);
-    }
-
-    isNullLiteral() {
-        return this.is(TokenType.NULL);
+    isIdentifier() {
+        return this.is(TokenClass.Ident);
     }
 
     isNumericLiteral() {
         return this.is(TokenClass.NumericLiteral);
     }
 
-    isPunctuator() {
-        return this.is(TokenClass.Punctuator);
-    }
-
     isStringLiteral() {
         return this.is(TokenClass.StringLiteral);
+    }
+
+    isTemplate() {
+        return this.is(TokenType.TEMPLATE);
+    }
+
+    isBooleanLiteral() {
+        return this.is(TokenType.TRUE) || this.is(TokenType.FALSE);
+    }
+
+    isNullLiteral() {
+        return this.is(TokenType.NULL);
+    }
+
+    isPunctuator() {
+        return this.is(TokenClass.Punctuator);
     }
 
     isRegularExpression() {
         return this.is(TokenClass.RegularExpression);
     }
 
-    isTemplate() {
-        return this.is(TokenType.TEMPLATE);
+    isKeyword() {
+        return this.is(TokenClass.Keyword);
     }
 
     isEOS() {

@@ -231,14 +231,14 @@ class Enforester {
     }
 
     consumeSemicolon() {
-        let lookahead = this.peek();
+        const lookahead = this.peek();
         if(lookahead && this.isPunctuator(lookahead, ";")) {
             this.advance();
         }
     }
 
     consumeComma() {
-        let lookahead = this.peek();
+        const lookahead = this.peek();
         if(lookahead && this.isPunctuator(lookahead, ",")) {
             this.advance();
         }
