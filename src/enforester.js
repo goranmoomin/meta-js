@@ -11,7 +11,8 @@ const {
     getOperatorPrec,
     isBinaryOperator,
     isUnaryOperator,
-    isOperator
+    isOperator,
+    isAssignOperator
 } = require("./operator-utils.js");
 
 class Enforester {
@@ -243,6 +244,81 @@ class Enforester {
         }
     }
 
+    matchIdentifier(value) {
+        const lookahead = this.advance();
+        if(this.isIdentifier(lookahead, value)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchLiteral() {
+        const lookahead = this.advance();
+        // TODO: handle regexes
+        if(this.isNumericLiteral(lookahead) ||
+           this.isStringLiteral(lookahead) ||
+           this.isTemplate(lookahead) ||
+           this.isBooleanLiteral(lookahead) ||
+           this.isNullLiteral(lookahead)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchOperator(value) {
+        const lookahead = this.advance();
+        if(this.isOperator(lookahead, value)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchAssignOperator(value) {
+        const lookahead = this.advance();
+        if(this.isAssignOperator(lookahead, value)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchKeyword(value) {
+        const lookahead = this.advance();
+        if(this.isKeyword(lookahead, value)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchPunctuator(value) {
+        const lookahead = this.advance();
+        if(this.isPunctuator(lookahead, value)) {
+            return lookahead;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
+    matchParens() {
+        const term = this.advance();
+        if(this.isParen(term)) {
+            return term.inner;
+        }
+
+        // TODO: saner error handling
+        throw new Error();
+    }
+
     matchBrackets() {
         const term = this.advance();
         if(this.isBracket(term)) {
@@ -261,17 +337,21 @@ class Enforester {
 
         // TODO: saner error handling
         throw new Error();
-    
     }
 
-    matchParens() {
+    matchSyntaxes() {
         const term = this.advance();
-        if(this.isParen(term)) {
+        if(this.isSyntax(term)) {
             return term.inner;
         }
 
         // TODO: saner error handling
         throw new Error();
+    }
+
+    isIdentifier(term, value) {
+        return term && (term instanceof TokenTerm) && term.isIdentifier() &&
+            (value ? term.token.value === value : true);
     }
 
     isNumericLiteral(term) {
@@ -294,6 +374,16 @@ class Enforester {
         return term && (term instanceof TokenTerm) && term.isNullLiteral();
     }
 
+    isOperator(term, value) {
+        return term && (term instanceof TokenTerm) && isOperator(term) &&
+            (value ? term.token.value === value : true);
+    }
+
+    isAssignOperator(term) {
+        return term && (term instanceof TokenTerm) && isAssignOperator(term) &&
+            (value ? term.token.value === value : true);
+    }
+
     isKeyword(term, value) {
         return term && (term instanceof TokenTerm) && term.isKeyword() &&
             (value ? term.token.value === value : true);
@@ -302,10 +392,6 @@ class Enforester {
     isPunctuator(term, value) {
         return term && (term instanceof TokenTerm) && term.isPunctuator() &&
             (value ? term.token.value === value : true);
-    }
-
-    isOperator(term) {
-        return term && (term instanceof TokenTerm) && isOperator(term);
     }
 
     isParen(term) {
