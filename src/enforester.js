@@ -61,6 +61,10 @@ class Enforester {
             return this.enforestIfStatement();
         }
 
+        if(this.isKeyword(lookahead, "for")) {
+            return this.enforestForStatement();
+        }
+
         if(this.isPunctuator(lookahead, ";")) {
             return new AST.EmptyStatement();
         }
@@ -106,6 +110,26 @@ class Enforester {
         });
     }
 
+    enforestForStatement() {
+        this.matchKeyword("for");
+        const condition = this.matchParens();
+        const conditionEnforester = new Enforester(condition);
+        if(conditionEnforester.isPunctuator(conditionEnforester.peek(), ";")) {
+            conditionEnforester.advance();
+            const test = conditionEnforester.isPunctuator(conditionEnforester.peek(), ";") ? null : conditionEnforester.enforestExpression();
+            conditionEnforester.matchPunctuator(";");
+            const update = conditionEnforester.terms.length === 0 ? null :  conditionEnforester.enforestExpression();
+            const body = this.enforestStatement();
+            return new AST.ForStatement({
+                init: null,
+                test,
+                update,
+                body
+            });
+        } else {
+            // TODO
+        }
+    }
     enforestExpressionStatement() {
         const expression = this.enforestExpression();
         this.consumeSemicolon();
