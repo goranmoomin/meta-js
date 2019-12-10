@@ -44,7 +44,7 @@ const assignOperators = [
 
 const getOperatorPrec = term => {
     if(!isOperator(term)) {
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
     return binaryOperatorPrecedence[term.token.value];

@@ -71,7 +71,7 @@ class DelimiterTerm extends Term {
     constructor(type = DelimiterTerm.types.BRACE, inner = []) {
         super();
         if(!Object.values(DelimiterTerm.types).includes(type)) {
-            // TODO: saner error handling
+            // FIXME: saner error handling
             throw new Error();
         }
         this.type = type;
@@ -84,7 +84,7 @@ class DelimiterTerm extends Term {
         case TokenType.LBRACE: return DelimiterTerm.types.BRACE;
         case TokenType.LPAREN: return DelimiterTerm.types.PAREN;
         case TokenType.LSYNTAX: return DelimiterTerm.types.SYNTAX;
-        default: throw new Error(); // TODO: saner error handling
+        default: throw new Error(); // FIXME: saner error handling
         }
         // unreachable
     }

@@ -35,7 +35,7 @@ class Enforester {
     }
 
     get operator() {
-        // TODO: saner error handling
+        // FIXME: saner error handling
         if(this.operators.length === 0) {
             throw new Error();
         }
@@ -77,7 +77,7 @@ class Enforester {
         const condition = this.matchParens();
         const conditionEnforester = new Enforester(condition);
         const test = conditionEnforester.enforestExpression();
-        // TODO: saner error handling
+        // FIXME: saner error handling
         if(!test) {
             throw new Error();
         }
@@ -93,7 +93,7 @@ class Enforester {
         const conndition = this.matchParens();
         const conditionEnforester = new Enforester(condition);
         const test = conditionEnforester.enforestExpression();
-        // TODO: saner error handling
+        // FIXME: saner error handling
         if(!test) {
             throw new Error();
         }
@@ -157,7 +157,7 @@ class Enforester {
     enforestExpressionLoop() {
         // something is wrong if this.term isn't null
         // or if this.operators isn't empty
-        // TODO: saner error handling
+        // FIXME: saner error handling
         if(this.term !== null || this.operators.length !== 0) {
             throw new Error();
         }
@@ -320,7 +320,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -335,7 +335,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -345,7 +345,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -355,7 +355,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -365,7 +365,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -375,7 +375,7 @@ class Enforester {
             return lookahead;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -385,7 +385,7 @@ class Enforester {
             return term.inner;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -395,7 +395,7 @@ class Enforester {
             return term.inner;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -405,7 +405,7 @@ class Enforester {
             return term.inner;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 
@@ -415,7 +415,7 @@ class Enforester {
             return term.inner;
         }
 
-        // TODO: saner error handling
+        // FIXME: saner error handling
         throw new Error();
     }
 

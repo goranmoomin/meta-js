@@ -58,7 +58,7 @@ class Reader extends Tokenizer {
             const token = this.advance(); // returns token
             if(isEOS(token)) {
                 // no delimiter should be left this point
-                // TODO: saner error handling
+                // FIXME: saner error handling
                 if(this.delimiters.length > 0) { throw new Error(); }
                 break;
             }
@@ -93,13 +93,13 @@ class Reader extends Tokenizer {
         this.startLine = this.line;
         this.startLineStart = this.lineStart;
 
-        if (this.lastIndex === 0) {
+        if(this.lastIndex === 0) {
             this.lastIndex = this.index;
             this.lastLine = this.line;
             this.lastLineStart = this.lineStart;
         }
 
-        if (this.index >= this.source.length) {
+        if(this.index >= this.source.length) {
             return { type: TokenType.EOS, slice: this.getSlice(this.index, startLocation) };
         }
 
@@ -152,7 +152,7 @@ class Reader extends Tokenizer {
             // check if it matches the left delimiter
             if(!(this.delimiters.length > 0 &&
                  isMatchingDelimiterPair(R.last(this.delimiters), token))) {
-                // TODO: saner error handling
+                // FIXME: saner error handling
                 throw new Error();
             }
             this.delimiters.pop();
@@ -167,7 +167,7 @@ class Reader extends Tokenizer {
                 elements.push(new TokenTerm(element));
                 if(element.interp) {
                     // consume left brace
-                    // TODO: saner error handling
+                    // FIXME: saner error handling
                     if(!isLeftBrace(this.advance())) { throw new Error(); };
                     elements.push(new DelimiterTerm(DelimiterTerm.types.BRACE, this.read())); // read until right brace
                 }
@@ -188,9 +188,9 @@ class Reader extends Tokenizer {
     scanTemplateElement() {
         let startLocation = this.getLocation();
         let start = this.index;
-        while (this.index < this.source.length) {
+        while(this.index < this.source.length) {
             let ch = this.source.charCodeAt(this.index);
-            switch (ch) {
+            switch(ch) {
             case 0x60: { // `
                 const slice = this.getSlice(start, startLocation);
                 this.index++;
@@ -202,7 +202,7 @@ class Reader extends Tokenizer {
                 };
             }
             case 0x24: { // $
-                if (this.source.charCodeAt(this.index + 1) === 0x7B) { // {
+                if(this.source.charCodeAt(this.index + 1) === 0x7B) { // {
                     const slice = this.getSlice(start, startLocation);
                     this.index++;
                     return {
@@ -217,7 +217,7 @@ class Reader extends Tokenizer {
             }
             case 0x5C: { // \\
                 let octal = this.scanStringEscape('', null)[1];
-                if (octal != null) {
+                if(octal != null) {
                     throw this.createError(ErrorMessages.NO_OCTALS_IN_TEMPLATES);
                 }
                 break;
@@ -225,7 +225,7 @@ class Reader extends Tokenizer {
             case 0x0D: { // \r
                 this.line++;
                 this.index++;
-                if (this.index < this.source.length && this.source.charAt(this.index) === '\n') {
+                if(this.index < this.source.length && this.source.charAt(this.index) === '\n') {
                     this.index++;
                 }
                 this.lineStart = this.index;
