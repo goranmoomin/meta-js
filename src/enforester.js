@@ -1,16 +1,13 @@
 const R = require("ramda");
-const AST = require("shift-ast/checked");
+const AST = require("./shift-ast.js");
 
 const {
-    Term,
     TokenTerm,
     DelimiterTerm
 } = require("./term.js");
 
 const {
     getOperatorPrec,
-    isBinaryOperator,
-    isUnaryOperator,
     isOperator,
     isAssignOperator
 } = require("./operator-utils.js");
@@ -49,6 +46,10 @@ class Enforester {
 
     enforestStatement() {
         const lookahead = this.peek();
+
+        // check if lookahead is comptime value
+        // and expand macro
+
         if(this.isBrace(lookahead)) {
             return this.enforestBlockStatement();
         }
@@ -63,6 +64,22 @@ class Enforester {
 
         if(this.isKeyword(lookahead, "for")) {
             return this.enforestForStatement();
+        }
+
+        if(this.isKeyword(lookahead, "function")) {
+            return this.enforestFunctionDeclaration();
+        }
+
+        if(this.isKeyword(lookahead, "var") ||
+           this.isKeyword(lookahead, "let") ||
+           this.isKeyword(lookahead, "const") ||
+           this.isKeyword(lookahead, "syntaxrec") ||
+           this.isKeyword(lookahead, "syntax")) {
+            const declaration = this.enforestVariableDeclaration();
+            this.consumeSemicolon();
+            return new AST.VariableDeclarationStatement({
+                declaration
+            });
         }
 
         if(this.isPunctuator(lookahead, ";")) {
@@ -126,10 +143,169 @@ class Enforester {
                 update,
                 body
             });
+        }
+
+        const lookahead = conditionEnforester.peek();
+        if(conditionEnforester.isKeyword(lookahead, "var") ||
+           conditionEnforester.isKeyword(lookahead, "let") ||
+           conditionEnforester.isKeyword(lookahead, "const")) {
+            const init = conditionEnforester.enforestVariableDeclaration();
+            const lookahead = conditionEnforester.peek();
+            if(this.isKeyword(lookahead, "in") ||
+               this.isIdentifier(lookahead, "of")) {
+                // TODO: implement for-in, for-of
+                throw new Error();
+            }
+            conditionEnforester.matchPunctuator(";");
+            if(conditionEnforester.isPunctuator(conditionEnforester.peek(), ";")) {
+                conditionEnforest.advance();
+                return new AST.ForStatement({
+                    init,
+                    test: null,
+                    update: conditionEnforester.enforestExpression(),
+                    body: this.enforestStatement()
+                });
+            }
+            const test = conditionEnforester.enforestExpression();
+            conditionEnforester.matchPunctuator(";");
+            return new AST.ForStatement({
+                init,
+                test,
+                update: conditionEnforester.enforestExpression(),
+                body: this.enforestStatement()
+            });
+        }
+        if(this.isKeyword(lookahead, "in") || this.isIdentifier(lookahead, "of")) {
+            // TODO: implement for-in, for-of
+            throw new Error();
+        }
+        const init = conditionEnforester.enforestExpression();
+        conditionEnforester.matchPunctuator(";");
+        if(conditionEnforester.isPunctuator(conditionEnforester.peek(), ";")) {
+            conditionEnforester.advance();
+            const update = conditionEnforester.enforestExpression();
+            return new AST.ForStatement({
+                init,
+                test,
+                update,
+                body: this.enforestStatement()
+            });
         } else {
-            // TODO
+            const test = conditionEnforester.enforestExpression();
+            conditionEnforester.matchPunctuator(";");
+            const update = conditionEnforester.enforestExpression();
+            return new AST.ForStatement({
+                init,
+                test,
+                update,
+                body: this.enforestStatement()
+            });
         }
     }
+
+    enforestFunctionDeclaration() {
+        this.advance(); // consume keyword function
+
+        const name = this.enforestBindingIdentifier();
+        const paramList = this.matchParens();
+        const body = this.matchBraces();
+
+        const paramListEnforester = new Enforester(paramList);
+        const params = paramListEnforester.enforestFormalParameters();
+
+        return new AST.FunctionDeclaration({
+            name,
+            isGenerator: false,
+            params, body
+        });
+    }
+
+    enforestFormalParameters() {
+        const items = [];
+        while(this.terms.length > 0) {
+            const lookahead = this.peek();
+            if(this.isPunctuator(lookahead, "...")) {
+                this.advance();
+                const rest = this.enforestBindingIdentifier();
+                return new AST.FormalParameters({
+                    items, rest
+                });
+            }
+
+            items.push(this.enforestBindingElement());
+            this.consumeComma();
+        }
+
+        return new AST.FormalParameters({
+            items, rest
+        });
+    }
+
+    enforestVariableDeclaration() {
+        // TODO
+    }
+
+    enforestVariableDeclarator() {
+        const binding = this.enforestBindingTarget();
+        const lookahead = this.peek();
+
+        if(this.isPunctuator(lookahead, "=")) {
+            this.advance();
+            const enforester = new Enforester(this.terms);
+            const init = enforester.enforestExpression();
+            // TODO: figure out what this does
+            this.terms = enforester.terms;
+            return new AST.VariableDeclarator({
+                binding, init
+            });
+        } else {
+            return new AST.VariableDelcarator({
+                binding,
+                init: null
+            });
+        }
+    }
+
+    enforestBindingTarget() {
+        const lookahead = this.peek();
+        if(this.isIdentifier(lookahead) || this.isKeyword(lookahead)) {
+            return this.enforestBindingIdentifier();
+        } else if(this.isBrace(lookahead)) {
+            // TODO
+        } else if(this.isBracket(lookahead)) {
+            // TODO
+        }
+        // FIXME: saner error handling
+        throw new Error();
+    }
+
+    enforestBindingElement() {
+        const binding = this.enforestBindingTarget();
+
+        if(this.isAssignOperator(this.peek())) {
+            this.advance();
+            const init = this.enforestExpressionLoop();
+            return new AST.BindingWithDefault({
+                binding, init
+            });
+        }
+
+        return binding;
+    }
+
+    enforestBindingIdentifier() {
+        return new AST.BindingIdentifier({ name: this.enforestIdentifier().value });
+    }
+
+    enforestIdentifier() {
+        const lookahead = this.peek();
+        if(this.isIdentifier(lookahead) || this.isKeyword(lookahead)) {
+            return this.advance();
+        }
+        // FIXME: saner error handling
+        throw new Error();
+    }
+
     enforestExpressionStatement() {
         const expression = this.enforestExpression();
         this.consumeSemicolon();
@@ -172,6 +348,13 @@ class Enforester {
             const lookahead = this.peek();
 
             // checking cases when this.term is nothing...
+
+            // identifiers
+            if(this.term === null && this.isIdentifier(lookahead)) {
+                // TODO
+                // this.term = this.enforestIdentifierExpression();
+            }
+
             // numeric literals
             if(this.term === null && this.isNumericLiteral(lookahead)) {
                 this.term = this.enforestNumericLiteral();
@@ -193,6 +376,13 @@ class Enforester {
             // null literals
             if(this.term === null && this.isNullLiteral(lookahead)) {
                 this.term = this.enforestNullLiteral();
+                continue;
+            }
+
+            // parens
+            if(this.term === null && this.isParen(lookahead)) {
+                const enforester = new Enforester(this.advance().inner);
+                this.term = enforester.enforestExpression();
                 continue;
             }
 

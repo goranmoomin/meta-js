@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@types/ramda@^0.26.38":
+  version "0.26.38"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.26.38.tgz#9d19bb910bb15fc9a213402092e160cbbb5acc9b"
+  integrity sha512-legQx15y72vedr5fkVTb5xZaI/OXMzJgZYbMxVL5r269sOg7fZIeitEOumcevMPOMZdqH4cMoL35VuU13TLvVA==
+  dependencies:
+    ts-toolbelt "^4.12.0"
+
 multimap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/multimap/-/multimap-1.0.2.tgz#6aa76fc3233905ba948bbe4c74dc2c3a0356eb36"
@@ -47,6 +54,11 @@ shift-regexp-acceptor@2.0.2:
     unicode-match-property-ecmascript "1.0.4"
     unicode-match-property-value-ecmascript "1.0.2"
     unicode-property-aliases-ecmascript "1.0.4"
+
+ts-toolbelt@^4.12.0:
+  version "4.14.6"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-4.14.6.tgz#9a232f62276caeee4fa9e81e0c4bffa047de0765"
+  integrity sha512-SONcnRd93+LuYGfn/CZg5A5qhCODohZslAVZKHHu5bnwUxoXLqd2k2VIdwRUXYfKnY+UCeNbI2pTPz+Dno6Mpg==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

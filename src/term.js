@@ -6,7 +6,7 @@ const {
 class Term {}
 
 class TokenTerm extends Term {
-    constructor(token){
+    constructor(token) {
         super();
         this.token = token;
     }

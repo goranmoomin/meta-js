@@ -100,7 +100,10 @@ class Reader extends Tokenizer {
         }
 
         if(this.index >= this.source.length) {
-            return { type: TokenType.EOS, slice: this.getSlice(this.index, startLocation) };
+            return {
+                type: TokenType.EOS,
+                slice: this.getSlice(this.index, startLocation)
+            };
         }
 
         let charCode = this.source.charCodeAt(this.index);
@@ -108,14 +111,13 @@ class Reader extends Tokenizer {
         if(charCode === 0x23) { // character #
             const startLocation = this.getLocation();
             const start = this.index;
-            const slice = this.getSlice(start, startLocation);
             this.index++;
-            if(this.source.charCodeAt(this.index) === 0x60) {
+            if(this.source.charCodeAt(this.index) === 0x60) { // character `
                 this.index++;
                 const token = {
                     type: TokenType.LSYNTAX,
                     value: "#`",
-                    slice
+                    slice: this.getSlice(start, startLocation)
                 };
                 this.delimiters.push(token); // push left syntax token
                 return token;
@@ -123,23 +125,24 @@ class Reader extends Tokenizer {
             return {
                 type: TokenType.IDENTIFIER,
                 value: "#",
-                slice
+                slice: this.getSlice(start, startLocation)
             };
-        } else if(charCode === 0x60 &&
+        } else if(charCode === 0x60 && // character `
                   this.delimiters.length > 0 &&
-                  isLeftSyntax(R.last(this.delimiters))) { // character `
+                  // last left delimiter is a #`
+                  isLeftSyntax(R.last(this.delimiters))) {
             const startLocation = this.getLocation();
             const start = this.index;
-            const slice = this.getSlice(start, startLocation);
             this.index++;
             this.delimiters.pop(); // pop left syntax token
             return {
                 type: TokenType.RSYNTAX,
                 value: "`",
-                slice: slice
+                slice: this.getSlice(start, startLocation)
             };
         }
 
+        // if nothing is returned, restore state
         // original behavior
         this.restoreLexerState(savedState);
         const token = super.advance();
@@ -191,8 +194,9 @@ class Reader extends Tokenizer {
         while(this.index < this.source.length) {
             let ch = this.source.charCodeAt(this.index);
             switch(ch) {
-            case 0x60: { // `
                 const slice = this.getSlice(start, startLocation);
+            case 0x60: { // character `
+                // don't include the trailing `
                 this.index++;
                 return {
                     type: TokenType.TEMPLATE,
@@ -201,8 +205,10 @@ class Reader extends Tokenizer {
                     slice
                 };
             }
-            case 0x24: { // $
-                if(this.source.charCodeAt(this.index + 1) === 0x7B) { // {
+            case 0x24: { // character $
+                if(this.source.charCodeAt(this.index + 1) === 0x7B) {
+                    // character {
+                    // don't include the trailing $
                     const slice = this.getSlice(start, startLocation);
                     this.index++;
                     return {
@@ -218,7 +224,8 @@ class Reader extends Tokenizer {
             case 0x5C: { // \\
                 let octal = this.scanStringEscape('', null)[1];
                 if(octal != null) {
-                    throw this.createError(ErrorMessages.NO_OCTALS_IN_TEMPLATES);
+                    // FIXME: saner error handling
+                    throw new Error();
                 }
                 break;
             }
